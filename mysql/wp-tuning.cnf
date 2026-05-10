@@ -1,0 +1,54 @@
+# ============================================================
+# MySQL 8.4 performance tuning for WordPress
+# Optimized for a server with 6 GB RAM
+#
+# After editing this file, a full container restart is
+# required — MySQL cannot reload InnoDB settings on the fly:
+#   Restart from Coolify UI or: docker restart <container>
+#
+# To verify applied values inside MySQL:
+#   SHOW VARIABLES LIKE 'innodb_buffer_pool_size';
+# ============================================================
+
+[mysqld]
+
+# --- InnoDB buffer pool ---
+# Most important setting: caches table data and indexes in RAM.
+# Rule of thumb: 50-70% of RAM dedicated to MySQL.
+# With 6 GB total and ~512 MB reserved for MySQL → 256 MB here.
+# Increase to 1G+ if MySQL is the primary RAM consumer.
+innodb_buffer_pool_size = 256M
+
+# Split buffer pool into chunks for better concurrency.
+# Recommended: 1 instance per GB of innodb_buffer_pool_size.
+innodb_buffer_pool_instances = 2
+
+# Size of each InnoDB redo log file.
+# Larger = fewer disk flushes, better write performance.
+innodb_log_file_size = 64M
+
+# 2 = flush log to disk once per second instead of per commit.
+# Trades strict ACID durability for ~2x write performance.
+# Acceptable for WordPress. Use 1 for strict durability.
+innodb_flush_log_at_trx_commit = 2
+
+# O_DIRECT bypasses OS page cache, avoids double-buffering
+# with InnoDB buffer pool. Recommended on Linux.
+innodb_flush_method = O_DIRECT
+
+# --- Connections ---
+
+# Maximum simultaneous client connections.
+# Each connection uses ~1 MB RAM. 150 is safe for most WP setups.
+max_connections = 150
+
+# Cache idle threads for reuse instead of destroying them.
+# Reduces overhead when connections open/close frequently.
+thread_cache_size = 16
+
+# --- Character set ---
+
+# Use utf8mb4 for full Unicode support (emojis, special chars).
+# Required for modern WordPress installs.
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
