@@ -80,8 +80,8 @@ services:
           if (!defined('WP_CACHE')) define('WP_CACHE', true);
           define('WP_REDIS_HOST', 'redis');
           define('WP_REDIS_PORT', 6379);
-          define('WP_MEMORY_LIMIT', '256M');
-          define('WP_MAX_MEMORY_LIMIT', '512M');
+          define('WP_MEMORY_LIMIT', '512M');
+          define('WP_MAX_MEMORY_LIMIT', '1024M');
     volumes:
       # Persistent WordPress files (plugins, themes, uploads)
       - wordpress-files:/var/www/html
