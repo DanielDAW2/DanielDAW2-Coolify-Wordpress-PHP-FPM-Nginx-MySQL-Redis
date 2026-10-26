@@ -57,7 +57,6 @@ services:
     build:
       context: .
       dockerfile: fpm/Dockerfile
-    mem_limit: 512m
     restart: unless-stopped
     depends_on:
       mysql:
@@ -72,7 +71,7 @@ services:
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX:-wp_}
       # Extra PHP constants injected into wp-config.php automatically
       # Note: WP_MAX_MEMORY_LIMIT is now inert — fpm/Dockerfile sets
-      # php_admin_value[memory_limit] = 256M, which plugins cannot raise
+      # php_admin_value[memory_limit] = 512M, which plugins cannot raise
       # via ini_set() (this is intentional, see the PHP advisory).
       # With the app-level limit fixed, WP_MAX_MEMORY_LIMIT can no
       # longer allocate beyond it even if a plugin tries.
@@ -80,8 +79,8 @@ services:
           if (!defined('WP_CACHE')) define('WP_CACHE', true);
           define('WP_REDIS_HOST', 'redis');
           define('WP_REDIS_PORT', 6379);
-          define('WP_MEMORY_LIMIT', '512M');
-          define('WP_MAX_MEMORY_LIMIT', '1024M');
+          define('WP_MEMORY_LIMIT', '1024M');
+          define('WP_MAX_MEMORY_LIMIT', '2048M');
     volumes:
       # Persistent WordPress files (plugins, themes, uploads)
       - wordpress-files:/var/www/html
